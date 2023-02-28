@@ -1,0 +1,31 @@
+name: Deploy helm to AKS
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: ./deploy/k8s/helm
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - uses: azure/aks-set-context@v1
+        name: Set AKS context
+        with:
+          creds: '${{ secrets.AZURE_CREDENTIALS }}'
+          cluster-name: ${{ env.CLUSTER_NAME }}
+          resource-group: ${{ env.RESOURCE_GROUP }}
+      
+      - name: Deploy the app to AKS
+        run: |
+          .\deploy-all-mac.ps1 -externalDns aks -aksName ${{ env.CLUSTER_NAME }} -aksRg ${{ env.RESOURCE_GROUP }} -imageTag linux-dev -useMesh $false    
