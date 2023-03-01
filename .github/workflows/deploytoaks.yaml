@@ -1,4 +1,4 @@
-# Deploy Helm to AKS
+# Deploy Helm to AKS using copilot
 name: Deploy helm to AKS
 
 on:
